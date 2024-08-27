@@ -1,16 +1,33 @@
 services:
   mysql:
     image: 'mysql:latest'
+    container_name: 'mysql-container'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      MYSQL_DATABASE: 'mydatabase'
+      MYSQL_PASSWORD: 'secret'
+      MYSQL_ROOT_PASSWORD: 'verysecret'
+      MYSQL_USER: 'myuser'
     ports:
       - '3306:3306'
 
   userservice:
-    container_name: 'userservicecontatiner'
-    image:
+    container_name: 'user-service-container'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PlATFORM: mysql
     ports:
       - '8080:8080'
+    restart: on-failure
+    depends_on:
+      - mysql
+  outsource-service:
+    container_name: outsource-service
+    image: ghcr.io/chatgut/frontend:sha-99ad268
+    ports:
+      - '3000:3000'
