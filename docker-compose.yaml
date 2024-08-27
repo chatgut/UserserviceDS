@@ -8,3 +8,9 @@ services:
       - 'MYSQL_USER=myuser'
     ports:
       - '3306:3306'
+
+  userservice:
+    container_name: 'userservicecontatiner'
+    image:
+    ports:
+      - '8080:8080'
